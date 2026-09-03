@@ -24,3 +24,10 @@ cost_threshold=0.005, label=1 비율 0.463)에서 구조적으로 base rate보�
 3종목 풀링 규모에서는 시퀀스 모델링이 XGBoost 대비 우위를 못 보임. 데이터량을
 KOSPI200 규모로 늘리기 전에, threshold=0.5 계열 정확도 지표 자체의 구조적 문제부터
 확인하는 게 우선일 수 있음.
+
+### 후속: threshold=0.5 아티팩트 가설 검증 (2026-09)
+Youden's J로 fold별 최적 threshold를 찾아 재평가했으나, GRU/TCN 둘 다 opt threshold
+에서도 vs_base_rate 5/5 실패 (오히려 fixed보다 더 나빠지는 경우가 많음). 다수 fold에서
+opt threshold가 자명해(threshold=inf, "아무것도 예측하지 않음"이 최선)로 수렴 --
+확률값 자체에 분리력이 없다는 뜻. threshold=0.5 아티팩트 가설 기각. GRU/TCN [실패]는
+평가 방식 문제가 아니라 실제 신호 부족으로 최종 확정.
