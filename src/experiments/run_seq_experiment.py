@@ -44,6 +44,13 @@ LR = 1e-3
 BATCH_SIZE = 64
 SEEDS = (42, 1, 7, 123, 2024)
 
+# 3종목 -> KOSPI200 50종목 pilot -> 전체 200종목 순으로 이 값만 바꿔서 실행하면 됨
+# ("pooled_windows_kospi200_pilot.npz" / "pooled_windows_kospi200_full.npz")
+POOLED_WINDOWS_FILE = "pooled_windows_kospi200_pilot.npz"
+
+# 시간 오래 걸리면 여기서 하나만 남겨서 따로 돌리면 됨 (예: MODELS = ["TCN"])
+MODELS = ["TCN"]
+
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 MODEL_BUILDERS = {
@@ -172,13 +179,13 @@ if __name__ == "__main__":
     else:
         print("GPU를 못 찾아서 CPU로 돌아감\n")
 
-    X, y, dates, tickers_arr = load_pooled_windows()
+    X, y, dates, tickers_arr = load_pooled_windows(filename=POOLED_WINDOWS_FILE)
     print(f"윈도우: {X.shape[0]}개, shape={X.shape[1:]}, 종목: {len(np.unique(tickers_arr))}개")
     print(f"기간: {pd.DatetimeIndex(dates).min().date()} ~ {pd.DatetimeIndex(dates).max().date()}")
     print(f"라벨 분포: {y.mean():.3f} (1의 비율)\n")
 
     all_results = {}
-    for model_name in ["GRU", "TCN"]:
+    for model_name in MODELS:
         print(f"=== {model_name} vs 동일가중 (5-seed walk-forward) ===")
         seed_df = run_multi_seed(X, y, dates, model_name)
         print("\n" + seed_df.round(4).to_string(index=False))

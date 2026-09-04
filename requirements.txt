@@ -4,3 +4,5 @@ numpy
 yfinance
 scikit-learn
 tqdm
+pykrx
+python-dotenv
